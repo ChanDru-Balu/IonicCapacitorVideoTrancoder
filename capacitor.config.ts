@@ -5,8 +5,9 @@ const config: CapacitorConfig = {
   appName: 'Media Recorder',
   webDir: 'www',
   server: {
-    androidScheme: 'https'
-  }
+    "url": "http://192.168.153.100:8100",
+    "cleartext": true
+   }
 };
 
 export default config;

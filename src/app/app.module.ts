@@ -9,6 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FilePath } from '@awesome-cordova-plugins/file-path/ngx';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -16,6 +18,7 @@ import { FilePath } from '@awesome-cordova-plugins/file-path/ngx';
   providers: [
     File,
     FilePath,
+    AndroidPermissions,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],
