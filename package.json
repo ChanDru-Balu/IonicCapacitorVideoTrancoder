@@ -38,6 +38,7 @@
     "@capawesome/capacitor-file-picker": "^5.1.1",
     "@ionic/angular": "^7.0.0",
     "@teamhive/capacitor-video-recorder": "^5.0.0",
+    "@whiteguru/capacitor-plugin-media-capture": "^5.0.2",
     "@whiteguru/capacitor-plugin-video-editor": "^5.0.5",
     "cordova-plugin-android-permissions": "^1.1.5",
     "cordova-plugin-file": "^8.0.0",

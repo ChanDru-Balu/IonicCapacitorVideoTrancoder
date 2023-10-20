@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { File } from '@awesome-cordova-plugins/file/ngx';
-
+import { AlertController, LoadingController, Platform } from '@ionic/angular';
 import {
   Filesystem,
   Directory,
@@ -12,9 +11,10 @@ import {
   VideoEditor,
   MediaFileResult,
 } from '@whiteguru/capacitor-plugin-video-editor';
-import { FilePath } from '@awesome-cordova-plugins/file-path/ngx';
-import { MediaCapture } from '@awesome-cordova-plugins/media-capture';
-import { AlertController, LoadingController } from '@ionic/angular';
+// import { FilePath } from '@awesome-cordova-plugins/file-path/ngx';
+import { MediaCapture, CaptureAudioOptions, CaptureVideoOptions } from '@awesome-cordova-plugins/media-capture';
+
+import { File } from '@awesome-cordova-plugins/file/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
 @Component({
@@ -27,8 +27,9 @@ export class HomePage {
   keys: any;
   percentage: any = 0.0
   constructor(
+    private platform : Platform,
     private file: File,
-    private filePath: FilePath,
+    // private filePath: FilePath,
     private loadingController: LoadingController,
     private androidPermissions: AndroidPermissions,
     private alertController: AlertController
@@ -88,19 +89,10 @@ export class HomePage {
 
   }
 
-  public async recordVideo(): Promise<void> {
+  public async pickVideo(): Promise<void> {
 
     const { files } = await FilePicker.pickVideos();
     console.log({ files });
-
-    // try {
-    //   const result = await Filesystem.readFile({
-    //     path: files[0].path?files[0].path : "content://media/external/video/media/1000085144",
-    //   });
-    //   console.log('File content:', result.data);
-    // } catch (error) {
-    //   console.error('Error reading file:', error);
-    // }
 
     const loading = await this.loadingController.create({
       message: 'Processing......'+this.percentage,
@@ -141,23 +133,64 @@ export class HomePage {
       }
     )
 
+  } 
+
+  async recordVideo(){
+    this.platform.ready().then(async ()=>{
+      try {
+        const videoOptions: CaptureVideoOptions = { limit: 1, duration: 30 };
+    
+        // const audioMedia = await MediaCapture.captureAudio(audioOptions);
+        const videoMedia = await MediaCapture.captureVideo(videoOptions).then(async (result: any)=>{
+          console.log({result})
+          console.log(result[0].fullPath)
+          const loading = await this.loadingController.create({
+            message: 'Processing......'+this.percentage,
+          });
+          await loading.present();
+          // Transcode with progress
+          const progressListener = await VideoEditor.addListener(
+            'transcodeProgress',
+            (info) => {console.log('info', info);this.percentage = info;loading.message = `Processing ... ${(info.progress*100).toFixed()}%`;}
+          );
+      
+          let sourcePath = result[0].fullPath;
+        
+          VideoEditor.edit({
+            path: sourcePath,
+            transcode: {
+              width: 720,
+              height: 480,
+              keepAspectRatio: true,
+            },
+            trim: {
+              startsAt: 3 * 1000, // from 00:03
+              endsAt: 10 * 1000, // to 00:10
+            },
+          }).then(
+            async (mediaFileResult: MediaFileResult) => {
+              progressListener.remove();
+              console.log('mediaPath', mediaFileResult.file.path);
+              console.log('Result:', mediaFileResult);
+              this.copyVideoToPermanentStorage(mediaFileResult);
+            },
+            async (error) => {
+              await this.loadingController.dismiss();
+              console.error('error', error);
+            }
+          )
+
+        })  
+        // console.log('Captured audio:', audioMedia);
+        console.log('Captured video:', videoMedia);
+        
+        // Handle the captured media as needed
+      } catch (error) {
+        console.error('Error capturing media:', error);
+      }
+    })
   }
 
-  async createParentDirectory(mediaFileResult: any) {
-    // try {
-    // let fileCreated =  await Filesystem.mkdir({
-    //   path: 'app://my_videos', // Specify the parent directory path
-    //   directory: FilesystemDirectory.Data, // Use the appropriate directory type
-    //   recursive: true, // Set to true to create parent directories if they don't exist
-    // });
-    // console.log({fileCreated})
-    // The parent directory has been created.
-    // Now, you can proceed to write the file.
-    this.copyVideoToPermanentStorage(mediaFileResult); // Call your file copy function here
-    // } catch (error) {
-    //   console.error('Error creating parent directory:', error);
-    // }
-  }
 
 
   async copyVideoToPermanentStorage(mediaFileResult: any) {
@@ -199,8 +232,23 @@ export class HomePage {
       console.error('Error copying the video to the main external storage directory:', error);
     }
   }
-  
-
 
 
 }
+
+
+// async createParentDirectory(mediaFileResult: any) {
+//   // try {
+//   // let fileCreated =  await Filesystem.mkdir({
+//   //   path: 'app://my_videos', // Specify the parent directory path
+//   //   directory: FilesystemDirectory.Data, // Use the appropriate directory type
+//   //   recursive: true, // Set to true to create parent directories if they don't exist
+//   // });
+//   // console.log({fileCreated})
+//   // The parent directory has been created.
+//   // Now, you can proceed to write the file.
+//   this.copyVideoToPermanentStorage(mediaFileResult); // Call your file copy function here
+//   // } catch (error) {
+//   //   console.error('Error creating parent directory:', error);
+//   // }
+// }

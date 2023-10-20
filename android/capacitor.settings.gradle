@@ -26,5 +26,8 @@ project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacit
 include ':capawesome-capacitor-file-picker'
 project(':capawesome-capacitor-file-picker').projectDir = new File('../node_modules/@capawesome/capacitor-file-picker/android')
 
+include ':whiteguru-capacitor-plugin-media-capture'
+project(':whiteguru-capacitor-plugin-media-capture').projectDir = new File('../node_modules/@whiteguru/capacitor-plugin-media-capture/android')
+
 include ':whiteguru-capacitor-plugin-video-editor'
 project(':whiteguru-capacitor-plugin-video-editor').projectDir = new File('../node_modules/@whiteguru/capacitor-plugin-video-editor/android')

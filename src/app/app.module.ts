@@ -10,7 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FilePath } from '@awesome-cordova-plugins/file-path/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
-
+// import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,6 +19,7 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
     File,
     FilePath,
     AndroidPermissions,
+    // MediaCapture,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],
