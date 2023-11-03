@@ -19,7 +19,7 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
     File,
     FilePath,
     AndroidPermissions,
-    // MediaCapture,
+    // MediaCapture
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],

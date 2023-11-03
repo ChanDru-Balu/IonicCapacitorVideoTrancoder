@@ -4,17 +4,154 @@
       Video Edit
     </ion-title>
   </ion-toolbar>
+  <ion-segment value="default" [(ngModel)]="type" >
+    <ion-segment-button value="pick">
+      <ion-label><ion-icon style="padding: 2px;" name="folder"></ion-icon>File Pick</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="record">
+      <ion-label><ion-icon style="padding: 2px;" name="videocam"></ion-icon>Record</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar style="align-items: center;text-align:center;" >
-      <ion-title size="large">Media Recorder</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" *ngIf="type == 'pick'" >
 
-  <div id="container">
+
+  <div>
     <ion-button expand="full" (click)="pickVideo()" > Pick Video </ion-button>
+    <video *ngIf="videoPath" controls width="100%"  height="auto">
+      <source [src]="videoPath" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    
+    <ion-accordion-group *ngIf="videoPath" >
+      <ion-accordion value="first">
+        <ion-item slot="header" color="light">
+          <ion-label>Video Details</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-grid>
+            <ion-row>
+              <ion-col>Width:</ion-col>
+              <ion-col>{{videoDetails.width}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>Height:</ion-col>
+              <ion-col>{{videoDetails.height}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>Duration:</ion-col>
+              <ion-col>{{videoDetails.duration}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>Size:</ion-col>
+              <ion-col>{{videoDetails.size}}</ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="second">
+        <ion-item slot="header" color="light">
+          <ion-label>Trim Options</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-grid>
+            <ion-row>
+              <ion-toggle (ionChange)="trimValue($event)">Need Trim</ion-toggle><br /><br />
+            </ion-row>
+            <ion-row>
+              <ion-item>
+                <ion-input label="Start:" labelPlacement="fixed" fill="outline" [(ngModel)]="start"></ion-input>
+              </ion-item>
+            </ion-row>
+            <ion-row style="margin-top: 2px;">
+              <ion-item>
+                <ion-input label="End:" labelPlacement="fixed" fill="outline" [(ngModel)]="end"></ion-input>
+              </ion-item>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="third">
+        <ion-item slot="header" color="light">
+          <ion-label>Transcode Options</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-grid>
+            <ion-row>
+              <ion-toggle (ionChange)="transcodeValue($event)"  >Need Transcode</ion-toggle><br /><br />
+            </ion-row>
+            <ion-row>
+              <ion-item>
+                <ion-input label="Width:" labelPlacement="fixed" fill="outline" [(ngModel)]="width"></ion-input>
+              </ion-item>
+            </ion-row>
+            <ion-row>
+              <ion-item>
+                <ion-input label="Height:" labelPlacement="fixed" fill="outline" [(ngModel)]="height"></ion-input>
+              </ion-item>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+    <div style="text-align: center;" *ngIf="videoPath" >
+      <ion-button (click)="process()" >Process Video</ion-button>
+
+    </div>
+
+  </div>
+</ion-content>
+
+<ion-content [fullscreen]="true" *ngIf="type == 'record'" >
+
+
+  <div>
     <ion-button expand="full" (click)="recordVideo()" > Record Video </ion-button>
+    <video *ngIf="videoPath" controls width="100%"  height="auto">
+      <source [src]="videoPath" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    
+    <ion-accordion-group *ngIf="videoPath" >
+      <ion-accordion value="first">
+        <ion-item slot="header" color="light">
+          <ion-label>Video Details</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-grid>
+            <ion-row>
+              <ion-col>Width:</ion-col>
+              <ion-col>{{videoDetails.width}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>Height:</ion-col>
+              <ion-col>{{videoDetails.height}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>Duration:</ion-col>
+              <ion-col>{{videoDetails.duration}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>Size:</ion-col>
+              <ion-col>{{videoDetails.size}}</ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="second">
+        <ion-item slot="header" color="light">
+          <ion-label>Second Accordion</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">Second Content</div>
+      </ion-accordion>
+      <ion-accordion value="third">
+        <ion-item slot="header" color="light">
+          <ion-label>Third Accordion</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">Third Content</div>
+      </ion-accordion>
+    </ion-accordion-group>
+
   </div>
 </ion-content>
