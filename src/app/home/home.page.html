@@ -97,7 +97,6 @@
     </ion-accordion-group>
     <div style="text-align: center;" *ngIf="videoPath" >
       <ion-button (click)="process()" >Process Video</ion-button>
-
     </div>
 
   </div>
@@ -105,15 +104,18 @@
 
 <ion-content [fullscreen]="true" *ngIf="type == 'record'" >
 
+  <ion-button expand="block" (click)="getVideoLength()">Get video length</ion-button>
+  <br>
 
   <div>
     <ion-button expand="full" (click)="recordVideo()" > Record Video </ion-button>
-    <video *ngIf="videoPath" controls width="100%"  height="auto">
-      <source [src]="videoPath" type="video/mp4">
-      Your browser does not support the video tag.
+    <video #myVideo *ngIf="recordedVideoPath" controls>
+      <source [src]="recordedVideoPath" type="video/mp4">
+      <!-- <source src="assets/mov_bbb.ogg" type="video/ogg"> -->
+      Your browser does not support HTML5 video.
     </video>
     
-    <ion-accordion-group *ngIf="videoPath" >
+    <ion-accordion-group *ngIf="recordedVideoPath" >
       <ion-accordion value="first">
         <ion-item slot="header" color="light">
           <ion-label>Video Details</ion-label>
@@ -122,19 +124,19 @@
           <ion-grid>
             <ion-row>
               <ion-col>Width:</ion-col>
-              <ion-col>{{videoDetails.width}}</ion-col>
+              <ion-col>{{recordedVideoDetails.width}}</ion-col>
             </ion-row>
             <ion-row>
               <ion-col>Height:</ion-col>
-              <ion-col>{{videoDetails.height}}</ion-col>
+              <ion-col>{{recordedVideoDetails.height}}</ion-col>
             </ion-row>
             <ion-row>
               <ion-col>Duration:</ion-col>
-              <ion-col>{{videoDetails.duration}}</ion-col>
+              <ion-col>{{recordedVideoDetails.duration}}</ion-col>
             </ion-row>
             <ion-row>
               <ion-col>Size:</ion-col>
-              <ion-col>{{videoDetails.size}}</ion-col>
+              <ion-col>{{recordedVideoDetails.size}}</ion-col>
             </ion-row>
           </ion-grid>
         </div>
@@ -154,4 +156,8 @@
     </ion-accordion-group>
 
   </div>
+  <div style="text-align: center;" *ngIf="recordedVideoPath" >
+    <ion-button (click)="recordProcess()" >Process Video</ion-button>
+  </div>
+
 </ion-content>

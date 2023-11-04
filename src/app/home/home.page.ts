@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component , ViewChild, ElementRef } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { AlertController, LoadingController, Platform } from '@ionic/angular';
 import {
@@ -26,17 +26,21 @@ import {
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  // @ViewChild('myVideo', { static: false }) videoElement: ElementRef | any;
+  @ViewChild('myVideo') videoElement: ElementRef|any;
   video: any;
   keys: any;
   percentage: any = 0.0;
   videoPath: any;
   videoDetails: any;
+  recordedVideoDetails: any ={width: 720 , height: 480 };
   width: any;
   height: any;
   end: any;
@@ -45,6 +49,10 @@ export class HomePage {
   trim : boolean = false;
   transcode : boolean = false;
   sourcePath: any;
+  recordedSourcePath: any;
+  recordedVideoPath: any;
+  vidElement: HTMLVideoElement | any;
+
   constructor(
     private platform: Platform,
     private file: File,
@@ -146,10 +154,23 @@ export class HomePage {
 
   }
 
+  recordProcess(){
+    console.log("Vid Element:",this.vidElement)
+  }
+
+  getVideoLength() {
+    const video: HTMLVideoElement = this.videoElement.nativeElement;
+    console.log({video})
+    alert(video.duration);
+  }
+
   async recordVideo() {
     this.platform.ready().then(async () => {
       try {
-        const videoOptions: CaptureVideoOptions = { limit: 1, duration: 30 };
+        console.log("Record Video Details:",this.recordedVideoDetails)
+        this.recordedVideoDetails['width'] = 720;
+        this.recordedVideoDetails['height'] = 480;
+        const videoOptions: CaptureVideoOptions = { limit: 1  };
 
         // const audioMedia = await MediaCapture.captureAudio(audioOptions);
         const videoMedia = await MediaCapture.captureVideo(videoOptions).then(
@@ -157,49 +178,49 @@ export class HomePage {
             console.log({ result });
             console.log(result[0].fullPath);
 
-            const loading = await this.loadingController.create({
-              message: 'Processing......' + this.percentage,
-            });
-            await loading.present();
-            // Transcode with progress
-            const progressListener = await VideoEditor.addListener(
-              'transcodeProgress',
-              (info) => {
-                console.log('info', info);
-                this.percentage = info;
-                loading.message = `Processing ... ${(
-                  info.progress * 100
-                ).toFixed()}%`;
-              }
-            );
+            // const loading = await this.loadingController.create({
+            //   message: 'Processing......' + this.percentage,
+            // });
+            // await loading.present();
+            // // Transcode with progress
+            // const progressListener = await VideoEditor.addListener(
+            //   'transcodeProgress',
+            //   (info) => {
+            //     console.log('info', info);
+            //     this.percentage = info;
+            //     loading.message = `Processing ... ${(
+            //       info.progress * 100
+            //     ).toFixed()}%`;
+            //   }
+            // );
 
             let sourcePath = result[0].fullPath;
-            this.sourcePath = sourcePath;
-            this.videoPath = Capacitor.convertFileSrc(sourcePath); 
+            this.recordedSourcePath = sourcePath;
+            this.recordedVideoPath = Capacitor.convertFileSrc(sourcePath); 
 
-            VideoEditor.edit({
-              path: sourcePath,
-              transcode: {
-                width: 720,
-                height: 480,
-                keepAspectRatio: true,
-              },
-              trim: {
-                startsAt: 3 * 1000, // from 00:03
-                endsAt: 10 * 1000, // to 00:10
-              },
-            }).then(
-              async (mediaFileResult: MediaFileResult) => {
-                progressListener.remove();
-                console.log('mediaPath', mediaFileResult.file.path);
-                console.log('Result:', mediaFileResult);
-                this.copyVideoToPermanentStorage(mediaFileResult);
-              },
-              async (error) => {
-                await this.loadingController.dismiss();
-                console.error('error', error);
-              }
-            );
+            // VideoEditor.edit({
+            //   path: sourcePath,
+            //   transcode: {
+            //     width: this.videoDetails.width,
+            //     height: this.videoDetails.height ,
+            //     keepAspectRatio: true,
+            //   },
+            //   trim: {
+            //     startsAt: 3 * 1000, // from 00:03
+            //     endsAt: 10 * 1000, // to 00:10
+            //   },
+            // }).then(
+            //   async (mediaFileResult: MediaFileResult) => {
+            //     progressListener.remove();
+            //     console.log('mediaPath', mediaFileResult.file.path);
+            //     console.log('Result:', mediaFileResult);
+            //     this.copyVideoToPermanentStorage(mediaFileResult);
+            //   },
+            //   async (error) => {
+            //     await this.loadingController.dismiss();
+            //     console.error('error', error);
+            //   }
+            // );
           }
         );
         // console.log('Captured audio:', audioMedia);
@@ -211,6 +232,7 @@ export class HomePage {
       }
     });
   }
+
 
   async process(){
 
