@@ -44,7 +44,6 @@
     "cordova-plugin-file": "^8.0.0",
     "cordova-plugin-filepath": "^1.6.0",
     "cordova-plugin-media-capture": "^5.0.0",
-    "cordova-plugin-video-player": "github:moust/cordova-plugin-videoplayer",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

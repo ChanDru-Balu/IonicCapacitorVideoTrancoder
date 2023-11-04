@@ -1,15 +1,15 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
+    <ion-title style="text-align: center;">
       Video Edit
     </ion-title>
   </ion-toolbar>
-  <ion-segment value="default" [(ngModel)]="type" >
+  <ion-segment style="margin-bottom: 1rem;" mode="ios" value="default" [(ngModel)]="type" >
     <ion-segment-button value="pick">
-      <ion-label><ion-icon style="padding: 2px;" name="folder"></ion-icon>File Pick</ion-label>
+      <ion-label><ion-icon  style="padding: 2px 5px 2px 2px;transform: translateY(3px);" name="folder"></ion-icon>File Pick</ion-label>
     </ion-segment-button>
     <ion-segment-button value="record">
-      <ion-label><ion-icon style="padding: 2px;" name="videocam"></ion-icon>Record</ion-label>
+      <ion-label><ion-icon style="padding: 2px 5px 2px 2px;transform: translateY(3px);" name="videocam"></ion-icon>Record</ion-label>
     </ion-segment-button>
   </ion-segment>
 </ion-header>
@@ -109,13 +109,14 @@
 
   <div>
     <ion-button expand="full" (click)="recordVideo()" > Record Video </ion-button>
-    <video #myVideo *ngIf="recordedVideoPath" controls>
-      <source [src]="recordedVideoPath" type="video/mp4">
-      <!-- <source src="assets/mov_bbb.ogg" type="video/ogg"> -->
-      Your browser does not support HTML5 video.
-    </video>
+    <div >
+      <video #myVideo *ngIf="recordedVideoPath" controls  width="480px" height="480px" >
+        <source [src]="recordedVideoPath" >
+      </video>
+    </div>
+
     
-    <ion-accordion-group *ngIf="recordedVideoPath" >
+    <ion-accordion-group *ngIf="recordedVideoPath" (ionChange)="accordionGroupChange($event)" >
       <ion-accordion value="first">
         <ion-item slot="header" color="light">
           <ion-label>Video Details</ion-label>
@@ -143,21 +144,53 @@
       </ion-accordion>
       <ion-accordion value="second">
         <ion-item slot="header" color="light">
-          <ion-label>Second Accordion</ion-label>
+          <ion-label>Trim Options</ion-label>
         </ion-item>
-        <div class="ion-padding" slot="content">Second Content</div>
+        <div class="ion-padding" slot="content">
+          <ion-grid>
+            <ion-row>
+              <ion-toggle (ionChange)="trimValueRecord($event)">Need Trim</ion-toggle><br /><br />
+            </ion-row>
+            <ion-row>
+              <ion-item>
+                <ion-input label="Start:" labelPlacement="fixed" fill="outline" [(ngModel)]="recordVideoStart"></ion-input>
+              </ion-item>
+            </ion-row>
+            <ion-row style="margin-top: 2px;">
+              <ion-item>
+                <ion-input label="End:" labelPlacement="fixed" fill="outline" [(ngModel)]="recordVideoEnd"></ion-input>
+              </ion-item>
+            </ion-row>
+          </ion-grid>
+        </div>
       </ion-accordion>
       <ion-accordion value="third">
         <ion-item slot="header" color="light">
-          <ion-label>Third Accordion</ion-label>
+          <ion-label>Transcode Options</ion-label>
         </ion-item>
-        <div class="ion-padding" slot="content">Third Content</div>
+        <div class="ion-padding" slot="content">
+          <ion-grid>
+            <ion-row>
+              <ion-toggle (ionChange)="transcodeValueRecord($event)"  >Need Transcode</ion-toggle><br /><br />
+            </ion-row>
+            <ion-row>
+              <ion-item>
+                <ion-input label="Width:" labelPlacement="fixed" fill="outline" [(ngModel)]="recordVideoWidth"></ion-input>
+              </ion-item>
+            </ion-row>
+            <ion-row>
+              <ion-item>
+                <ion-input label="Height:" labelPlacement="fixed" fill="outline" [(ngModel)]="recordVideoHeight"></ion-input>
+              </ion-item>
+            </ion-row>
+          </ion-grid>
+        </div>
       </ion-accordion>
     </ion-accordion-group>
 
   </div>
   <div style="text-align: center;" *ngIf="recordedVideoPath" >
-    <ion-button (click)="recordProcess()" >Process Video</ion-button>
+    <ion-button [disabled]="!recordVideoEndChanged" (click)="recordProcess()" >Process Video</ion-button>
   </div>
 
 </ion-content>

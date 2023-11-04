@@ -25,6 +25,9 @@ import {
 
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+// import { Media, MediaPlugin } from '@capacitor-community/media';
+import { Plugins } from '@capacitor/core';
+const { Media } = Plugins;
 
 
 @Component({
@@ -48,10 +51,17 @@ export class HomePage {
   type: any = 'pick';
   trim : boolean = false;
   transcode : boolean = false;
+  recordedVideoTrim : boolean = false;
+  recordedVideoTranscode : boolean = false;
   sourcePath: any;
   recordedSourcePath: any;
   recordedVideoPath: any;
   vidElement: HTMLVideoElement | any;
+  recordVideoWidth: any = 480;
+  recordVideoHeight: any = 720;
+  recordVideoEnd: any;
+  recordVideoStart : any = 0;
+  recordVideoEndChanged: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -60,7 +70,9 @@ export class HomePage {
     private loadingController: LoadingController,
     private androidPermissions: AndroidPermissions,
     private alertController: AlertController
-  ) {}
+  ) {
+    
+  }
 
   async checkAndRequestExternalStoragePermission() {
     const hasPermission = await this.androidPermissions.checkPermission(
@@ -132,6 +144,16 @@ export class HomePage {
     this.trim = ev.detail.checked
   }
 
+  transcodeValueRecord(ev:any){
+    console.log("Trans:",{ev})
+    this.recordedVideoTranscode = ev.detail.checked
+  }
+
+  trimValueRecord(ev:any){
+    console.log("Trim:",{ev})
+    this.recordedVideoTrim = ev.detail.checked
+  }
+
   public async pickVideo(): Promise<void> {
     const { files } = await FilePicker.pickVideos();
     console.log({ files });
@@ -154,14 +176,20 @@ export class HomePage {
 
   }
 
-  recordProcess(){
-    console.log("Vid Element:",this.vidElement)
-  }
-
   getVideoLength() {
     const video: HTMLVideoElement = this.videoElement.nativeElement;
     console.log({video})
-    alert(video.duration);
+    this.recordVideoEnd  = video.duration
+
+    console.log(this.recordVideoWidth)
+    console.log(this.recordVideoHeight)
+    console.log(this.recordVideoEnd)
+    this.recordVideoEndChanged = true
+  }
+
+  accordionGroupChange(ev:any){
+    console.log({ev});
+    if(!this.recordVideoEndChanged) return this.getVideoLength()
   }
 
   async recordVideo() {
@@ -198,6 +226,11 @@ export class HomePage {
             this.recordedSourcePath = sourcePath;
             this.recordedVideoPath = Capacitor.convertFileSrc(sourcePath); 
 
+            // const video: HTMLVideoElement = this.videoElement.nativeElement;
+            // console.log({video})
+            // alert(video.duration);
+          
+            // this.getVideoLength()
             // VideoEditor.edit({
             //   path: sourcePath,
             //   transcode: {
@@ -352,6 +385,124 @@ export class HomePage {
  
   }
 
+  async recordProcess(){
+
+    console.log("Trim and transcode:",this.recordedVideoTrim,this.recordedVideoTranscode)
+
+    if(this.recordedVideoTrim && this.recordedVideoTranscode){
+   const loading = await this.loadingController.create({
+      message: 'Processing......' + this.percentage,
+    });
+    await loading.present();
+    // Transcode with progress
+    const progressListener = await VideoEditor.addListener(
+      'transcodeProgress',
+      (info) => {
+        console.log('info', info);
+        this.percentage = info;
+        loading.message = `Processing ... ${(info.progress * 100).toFixed()}%`;
+      }
+    );
+
+    VideoEditor.edit({
+      path: this.recordedSourcePath,
+      transcode: {
+        width: this.recordVideoWidth,
+        height: this.recordVideoHeight,
+        keepAspectRatio: true,
+      },
+      trim: {
+        startsAt: this.recordVideoStart * 1000, // from 00:03
+        endsAt: this.recordVideoEnd * 1000, // to 00:10
+      },
+    }).then(
+      async (mediaFileResult: MediaFileResult) => {
+        progressListener.remove();
+        console.log('mediaPath', mediaFileResult.file.path);
+        console.log('Result:', mediaFileResult);
+        this.copyVideoToPermanentStorage(mediaFileResult);
+      },
+      async (error) => {
+        await this.loadingController.dismiss();
+        console.error('error', error);
+      }
+    )
+    }
+
+    if(this.recordedVideoTrim && !this.recordedVideoTranscode){
+       const loading = await this.loadingController.create({
+      message: 'Processing......' + this.percentage,
+    });
+    await loading.present();
+    // Transcode with progress
+    const progressListener = await VideoEditor.addListener(
+      'transcodeProgress',
+      (info) => {
+        console.log('info', info);
+        this.percentage = info;
+        loading.message = `Processing ... ${(info.progress * 100).toFixed()}%`;
+      }
+    );
+
+    VideoEditor.edit({
+      path: this.recordedSourcePath,
+      trim: {
+        startsAt: this.recordVideoStart * 1000, // from 00:03
+        endsAt: this.recordVideoEnd * 1000, // to 00:10
+      },
+    }).then(
+      async (mediaFileResult: MediaFileResult) => {
+        progressListener.remove();
+        console.log('mediaPath', mediaFileResult.file.path);
+        console.log('Result:', mediaFileResult);
+        this.copyVideoToPermanentStorage(mediaFileResult);
+      },
+      async (error) => {
+        await this.loadingController.dismiss();
+        console.error('error', error);
+      }
+    )
+    }
+
+    if(!this.recordedVideoTrim && this.recordedVideoTranscode){
+       const loading = await this.loadingController.create({
+      message: 'Processing......' + this.percentage,
+    });
+    await loading.present();
+    // Transcode with progress
+    const progressListener = await VideoEditor.addListener(
+      'transcodeProgress',
+      (info) => {
+        console.log('info', info);
+        this.percentage = info;
+        loading.message = `Processing ... ${(info.progress * 100).toFixed()}%`;
+      }
+    );
+
+    VideoEditor.edit({
+      path: this.recordedSourcePath,
+      transcode: {
+        width: this.recordVideoWidth,
+        height: this.recordVideoHeight,
+        keepAspectRatio: true,
+      }
+    }).then(
+      async (mediaFileResult: MediaFileResult) => {
+        progressListener.remove();
+        console.log('mediaPath', mediaFileResult.file.path);
+        console.log('Result:', mediaFileResult);
+        this.copyVideoToPermanentStorage(mediaFileResult);
+      },
+      async (error) => {
+        await this.loadingController.dismiss();
+        console.error('error', error);
+      }
+    )
+    }
+
+ 
+  }
+
   async copyVideoToPermanentStorage(mediaFileResult: any) {
     const sourcePath = mediaFileResult.file.path;
     const destinationPath =
@@ -397,18 +548,4 @@ export class HomePage {
   }
 }
 
-// async createParentDirectory(mediaFileResult: any) {
-//   // try {
-//   // let fileCreated =  await Filesystem.mkdir({
-//   //   path: 'app://my_videos', // Specify the parent directory path
-//   //   directory: FilesystemDirectory.Data, // Use the appropriate directory type
-//   //   recursive: true, // Set to true to create parent directories if they don't exist
-//   // });
-//   // console.log({fileCreated})
-//   // The parent directory has been created.
-//   // Now, you can proceed to write the file.
-//   this.copyVideoToPermanentStorage(mediaFileResult); // Call your file copy function here
-//   // } catch (error) {
-//   //   console.error('Error creating parent directory:', error);
-//   // }
-// }
+
