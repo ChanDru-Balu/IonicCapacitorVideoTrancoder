@@ -506,12 +506,12 @@ export class HomePage {
   async copyVideoToPermanentStorage(mediaFileResult: any) {
     const sourcePath = mediaFileResult.file.path;
     const destinationPath =
-      Directory.Documents + '/chan/' + mediaFileResult.file.name;
+      Directory.Documents + '/simpleVideoEitor/' + mediaFileResult.file.name;
     console.log('Destination path:', destinationPath);
 
     Filesystem.mkdir({
       directory: Directory.Documents,
-      path: '/chan',
+      path: '/simpleVideoEditor',
       recursive: true,
     })
       .then((result) => {

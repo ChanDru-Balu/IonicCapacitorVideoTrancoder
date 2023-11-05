@@ -26,7 +26,7 @@
     "@awesome-cordova-plugins/file": "^6.4.0",
     "@awesome-cordova-plugins/file-path": "^6.4.0",
     "@awesome-cordova-plugins/media-capture": "^6.4.0",
-    "@capacitor/android": "5.4.2",
+    "@capacitor/android": "5.5.1",
     "@capacitor/app": "5.0.6",
     "@capacitor/camera": "^5.0.7",
     "@capacitor/core": "5.4.2",
