@@ -1,8 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title style="text-align: center;">
-      Video Edit
+      Simple Video Editor
     </ion-title>
+    <ion-buttons slot="end" >
+      <ion-button routerLink="/info" >
+        <img width="20px" height="20px" src="assets/image/info.png" />
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <ion-segment style="margin-bottom: 1rem;" mode="ios" value="default" [(ngModel)]="type" >
     <ion-segment-button value="pick">
