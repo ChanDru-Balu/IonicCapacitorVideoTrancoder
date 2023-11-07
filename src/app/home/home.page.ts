@@ -531,6 +531,7 @@ export class HomePage {
         path: destinationPath,
         data: sourceFile.data,
         directory: Directory.ExternalStorage,
+        recursive: true
       }).then(async (wrotePath: any) => {
         await this.loadingController.dismiss();
         alert(`Processed File Stored in ${wrotePath.uri}`);
