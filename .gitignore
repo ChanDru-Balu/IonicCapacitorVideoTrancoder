@@ -21,7 +21,6 @@ log.txt
 # Ionic
 /.ionic
 /www
-/platforms
 /plugins
 
 # Compiled output
