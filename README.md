@@ -8,10 +8,10 @@ This implementation is in an Ionic 7 app using Capacitor 5, utilizing the 'fileP
 Done:
 1. File Picker from gallery
 2. Meida Capturing using Camera record
-3. Transcode and Trimming the video for Static Values
+3. Transcode and Trimming the video for Static Values,
+4.Play the video which is selecting or recording,
 
 To DO:
-1. Play the video which is selecting or recording,
 2. Choose the transcode quality ,
 3. Choose the start time or end Time
-4. paly the transcoded or trimmed video
+4. play the transcoded or trimmed video
