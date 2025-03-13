@@ -10,14 +10,14 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-segment style="margin-bottom: 1rem;" mode="ios" value="default" [(ngModel)]="type" >
+  <!-- <ion-segment style="margin-bottom: 1rem;" mode="ios" value="default" [(ngModel)]="type" >
     <ion-segment-button value="pick">
       <ion-label><ion-icon  style="padding: 2px 5px 2px 2px;transform: translateY(3px);" name="folder"></ion-icon>File Pick</ion-label>
     </ion-segment-button>
     <ion-segment-button value="record">
       <ion-label><ion-icon style="padding: 2px 5px 2px 2px;transform: translateY(3px);" name="videocam"></ion-icon>Record</ion-label>
     </ion-segment-button>
-  </ion-segment>
+  </ion-segment> -->
 </ion-header>
 
 <ion-content [fullscreen]="true" *ngIf="type === 'pick'" >

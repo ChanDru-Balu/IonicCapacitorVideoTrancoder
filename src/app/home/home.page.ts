@@ -15,8 +15,9 @@ import {
 import {
   VideoEditor,
   MediaFileResult,
+  EditOptions,
 } from '@whiteguru/capacitor-plugin-video-editor';
-// import { FilePath } from '@awesome-cordova-plugins/file-path/ngx';
+import { FilePath } from '@awesome-cordova-plugins/file-path/ngx';
 import {
   MediaCapture,
   CaptureAudioOptions,
@@ -48,7 +49,7 @@ export class HomePage {
   height: any;
   end: any;
   start: any;
-  type: any = 'pick';
+  type: any = 'record';
   trim : boolean = false;
   transcode : boolean = false;
   recordedVideoTrim : boolean = false;
@@ -66,7 +67,7 @@ export class HomePage {
   constructor(
     private platform: Platform,
     private file: File,
-    // private filePath: FilePath,
+    private filePath: FilePath,
     private loadingController: LoadingController,
     private androidPermissions: AndroidPermissions,
     private alertController: AlertController
@@ -170,8 +171,15 @@ export class HomePage {
     let pathWithoutContent = 'file://';
     let sourcePath = `${pathWithoutContent}${array[1]}`;
     console.log({ sourcePath });
-    this.sourcePath = sourcePath;
-    this.videoPath = Capacitor.convertFileSrc(sourcePath); 
+    // let filePath = await Filesystem.getUri({
+    //   path: files[0].path ?? '',
+    //   directory: Directory.Documents
+    // })
+    const resolvedPath = await this.filePath.resolveNativePath(files[0].path ?? '')
+    console.log("✅ Resolved Path:", resolvedPath);
+    console.log({resolvedPath})
+    this.sourcePath = resolvedPath
+    this.videoPath = Capacitor.convertFileSrc(files[0].path ?? ''); 
   
 
   }
@@ -360,15 +368,17 @@ export class HomePage {
         loading.message = `Processing ... ${(info.progress * 100).toFixed()}%`;
       }
     );
-
-    VideoEditor.edit({
+    console.log("Path:",this.sourcePath)
+    let editOptions : EditOptions = {
       path: this.sourcePath,
       transcode: {
         width: this.width,
         height: this.height,
         keepAspectRatio: true,
       }
-    }).then(
+    }
+    console.log({editOptions})
+    VideoEditor.edit(editOptions).then(
       async (mediaFileResult: MediaFileResult) => {
         progressListener.remove();
         console.log('mediaPath', mediaFileResult.file.path);
@@ -377,7 +387,7 @@ export class HomePage {
       },
       async (error) => {
         await this.loadingController.dismiss();
-        console.error('error', error);
+        console.error('Video Editor Transcode Error:', error );
       }
     )
     }
